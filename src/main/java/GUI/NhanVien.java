@@ -1,13 +1,17 @@
 package GUI;
 
+import DTO.NhanVienDTO;
+import BUS.NhanVienBUS;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 
 public class NhanVien extends JPanel {
     JPanel NhanVienForm = new JPanel();
     JScrollPane tableScrollPane;
     JTable NhanVienJTable;
+    DefaultTableModel model;
     JPanel searchBar = new JPanel();
 
     JTextField tenField = new JTextField();
@@ -35,25 +39,53 @@ public class NhanVien extends JPanel {
     JLabel diachiLabel = new JLabel("Địa chỉ:");
     JLabel searchLabel = new JLabel("Tìm kiếm:");
 
-
+    NhanVienBUS sachBUS = new NhanVienBUS();
+    
     public NhanVien() {
+        initComponents();
         initGUI();
-        
+    }
+    
+    
+    public void initComponents() {
+
+        gioitinhCB.addItem("Male");
+        gioitinhCB.addItem("Female");
+
+
+        String[] columnNames = { "ID", "Tên nhân viên", "Giới tính", "Năm sinh", "Số điện thoại", "Ngày bắt đầu", "Lương", "Địa chỉ"};
+        Object[][] data = {};
+        model = new DefaultTableModel(data, columnNames);
+        NhanVienJTable = new JTable(model);
+        tableScrollPane = new JScrollPane(NhanVienJTable);
+
+
+        addButton.addActionListener(e -> onAddNhanVien());
+        deleteButton.addActionListener(e -> onDeleteNhanVien());
+        searchButton.addActionListener(e -> onSearchNhanVien());
+        refreshButton.addActionListener(e -> refreshTable());
+
+
+        NhanVienJTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int row = NhanVienJTable.getSelectedRow();
+                if (row >= 0) {
+                    tenField.setText(NhanVienJTable.getValueAt(row, 1).toString());
+                    gioitinhCB.setSelectedItem(NhanVienJTable.getValueAt(row, 2).toString());
+                    namsinhField.setText(NhanVienJTable.getValueAt(row, 3).toString());
+                    sdtField.setText(NhanVienJTable.getValueAt(row, 4).toString());
+                    ngaybdField.setText(NhanVienJTable.getValueAt(row, 5).toString());
+                    luongField.setText(NhanVienJTable.getValueAt(row, 6).toString());
+                    diachiField.setText(NhanVienJTable.getValueAt(row, 7).toString());
+                }
+            }
+        });
+
     }
     
 
     private void initGUI() {
         setStyle();
-
-    
-        String[] columnNames = { "ID", "Tên nhân viên", "Giới tính", "Năm sinh", "Số điện thoại", "Ngày bắt đầu", "Lương", "Địa chỉ"};
-        Object[][] data = {
-            { 1, "Doraemon", "Fujiko F. Fujio", "1", "1", "1", "1", "1" },
-            { 2, "Conan", "Aoyama Gosho", "1", "1", "1", "1", "1" },
-            { 3, "Naruto", "Masashi Kishimoto", "1", "1", "1", "1", "1" }
-        };
-        NhanVienJTable = new JTable(data, columnNames);
-        tableScrollPane = new JScrollPane(NhanVienJTable);
 
 
         GroupLayout formGroupLayout = new GroupLayout(NhanVienForm);
@@ -177,6 +209,64 @@ public class NhanVien extends JPanel {
                 .addComponent(searchBar)
                 .addComponent(tableScrollPane)
         );
+    }
+    
+    
+    
+    private void onAddNhanVien() {
+        try {
+            NhanVienDTO nv = new NhanVienDTO(
+                "NV" + (model.getRowCount() + 1),
+                tenField.getText(),
+                (String) gioitinhCB.getSelectedItem(),
+                Integer.parseInt(namsinhField.getText()),
+                Integer.parseInt(sdtField.getText()),
+                Integer.parseInt(ngaybdField.getText()),
+                Integer.parseInt(luongField.getText()),
+                diachiField.getText()
+            );
+
+            sachBUS.addNhanVien(nv);
+            model.addRow(nv.toRow());
+            clearFields();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi nhập liệu: " + ex.getMessage());
+        }
+    }
+
+    private void onDeleteNhanVien() {
+        int row = NhanVienJTable.getSelectedRow();
+        if (row >= 0) {
+            String maNhanVien = (String) model.getValueAt(row, 0);
+            sachBUS.removeNhanVien(maNhanVien);
+            model.removeRow(row);
+        } else {
+            JOptionPane.showMessageDialog(this, "Chọn nhân viên cần xóa!");
+        }
+    }
+
+    private void onSearchNhanVien() {
+        String keyword = searchField.getText();
+        model.setRowCount(0);
+        for (NhanVienDTO s : sachBUS.searchByName(keyword)) {
+            model.addRow(s.toRow());
+        }
+    }
+
+    private void refreshTable() {
+        model.setRowCount(0);
+        for (NhanVienDTO s : sachBUS.getAll()) {
+            model.addRow(s.toRow());
+        }
+    }
+
+    private void clearFields() {
+        tenField.setText("");
+        namsinhField.setText("");
+        ngaybdField.setText("");
+        luongField.setText("");
+        diachiField.setText("");
+        searchField.setText("");
     }
 
 

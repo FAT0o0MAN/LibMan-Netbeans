@@ -5,11 +5,14 @@ GUI\fk$1.class
 GUI\TacGia.class
 GUI\DocGia.class
 GUI\NhaXuatBan.class
+BUS\NhanVienBUS.class
+BUS\TacGiaBUS.class
 BUS\SachBUS.class
 com\mycompany\libman\netbeans\LibManNetbeans.class
 DTO\TacGiaDTO.class
 DTO\NhanVienDTO.class
-BUS\Test.class
+BUS\NhaXuatBanBUS.class
+BUS\DocGiaBUS.class
 DTO\DocGiaDTO.class
 DTO\NhaXuatBanDTO.class
 GUI\fk$3.class

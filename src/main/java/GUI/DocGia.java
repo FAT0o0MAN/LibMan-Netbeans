@@ -1,13 +1,17 @@
 package GUI;
 
+import BUS.DocGiaBUS;
+import DTO.DocGiaDTO;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 
 public class DocGia extends JPanel {
     JPanel DocGiaForm = new JPanel();
     JScrollPane tableScrollPane;
     JTable DocGiaJTable;
+    DefaultTableModel model;
     JPanel searchBar = new JPanel();
 
     JTextField tenField = new JTextField();
@@ -28,24 +32,50 @@ public class DocGia extends JPanel {
     JLabel sdtLabel = new JLabel("Số điện thoại:");
     JLabel gioitinhLabel = new JLabel("Giới tính:");
     JLabel searchLabel = new JLabel("Tìm kiếm:");
+    
+    DocGiaBUS docgiaBUS = new DocGiaBUS();
 
 
     public DocGia() {
+        initComponents();
         initGUI();
+    }
+    
+    private void initComponents() {
+        
+        gioitinhCB.addItem("Male");
+        gioitinhCB.addItem("Female");
+        
+        
+        String[] columnNames = { "ID", "Tên độc giả", "Địa chỉ", "Số điện thoại", "Giới tính"};
+        Object[][] data = {};
+        model = new DefaultTableModel(data, columnNames);
+        DocGiaJTable = new JTable(model);
+        tableScrollPane = new JScrollPane(DocGiaJTable);
+
+
+        addButton.addActionListener(e -> onAddDocGia());
+        deleteButton.addActionListener(e -> onDeleteDocGia());
+        searchButton.addActionListener(e -> onSearchDocGia());
+        refreshButton.addActionListener(e -> refreshTable());
+
+
+        DocGiaJTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int row = DocGiaJTable.getSelectedRow();
+                if (row >= 0) {
+                    tenField.setText(DocGiaJTable.getValueAt(row, 1).toString());
+                    diachiField.setText(DocGiaJTable.getValueAt(row, 2).toString());
+                    sdtField.setText(DocGiaJTable.getValueAt(row, 3).toString());
+                    gioitinhCB.setSelectedItem(DocGiaJTable.getValueAt(row, 4).toString());
+                }
+            }
+        });
     }
 
     private void initGUI() {
         setStyle();
 
-    
-        String[] columnNames = { "ID", "Tên độc giả", "Địa chỉ", "Số điện thoại", "Giới tính"};
-        Object[][] data = {
-            { 1, "Doraemon", "Fujiko F. Fujio", "1", "1" },
-            { 2, "Conan", "Aoyama Gosho", "1", "1", "1" },
-            { 3, "Naruto", "Masashi Kishimoto", "1", "1" }
-        };
-        DocGiaJTable = new JTable(data, columnNames);
-        tableScrollPane = new JScrollPane(DocGiaJTable);
 
 
         GroupLayout formGroupLayout = new GroupLayout(DocGiaForm);
@@ -158,6 +188,60 @@ public class DocGia extends JPanel {
                 .addComponent(searchBar)
                 .addComponent(tableScrollPane)
         );
+    }
+    
+    
+    
+    
+    private void onAddDocGia() {
+        try {
+            DocGiaDTO dg = new DocGiaDTO(
+                "DG" + (model.getRowCount() + 1),
+                tenField.getText(),
+                diachiField.getText(),
+                Integer.parseInt(sdtField.getText()),
+                (String) gioitinhCB.getSelectedItem()
+            );
+
+            docgiaBUS.addDocGia(dg);
+            model.addRow(dg.toRow());
+            clearFields();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi nhập liệu: " + ex.getMessage());
+        }
+    }
+
+    private void onDeleteDocGia() {
+        int row = DocGiaJTable.getSelectedRow();
+        if (row >= 0) {
+            String maDocGia = (String) model.getValueAt(row, 0);
+            docgiaBUS.removeDocGia(maDocGia);
+            model.removeRow(row);
+        } else {
+            JOptionPane.showMessageDialog(this, "Chọn độc giả cần xóa!");
+        }
+    }
+
+    private void onSearchDocGia() {
+        String keyword = searchField.getText();
+        model.setRowCount(0);
+        for (DocGiaDTO s : docgiaBUS.searchByName(keyword)) {
+            model.addRow(s.toRow());
+        }
+    }
+
+    private void refreshTable() {
+        model.setRowCount(0);
+        for (DocGiaDTO s : docgiaBUS.getAll()) {
+            model.addRow(s.toRow());
+        }
+    }
+
+    private void clearFields() {
+        tenField.setText("");
+        diachiField.setText("");
+        sdtField.setText("");
+        searchField.setText("");
     }
 
 

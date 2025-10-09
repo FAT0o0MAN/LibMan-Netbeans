@@ -170,7 +170,7 @@ public class fk extends JFrame{
         JLabel tablabel8 = new JLabel("Phiếu Nhập", SwingConstants.CENTER); 
         JLabel tablabel9 = new JLabel("Đăng Xuất", SwingConstants.CENTER); 
 
-        ImageIcon img = new ImageIcon("C:\\Users\\Nam\\Desktop\\baihoc\\Current\\java\\LibMan-Netbeans\\src\\main\\java\\GUI\\img\\iconsgu 3.png");
+        ImageIcon img = new ImageIcon("img/iconsgu 3.png");
         tablabel1.setIcon(new ImageIcon(img.getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH)));
         tablabel2.setFont(new Font("Arial", Font.BOLD, 18));
         tablabel3.setFont(new Font("Arial", Font.BOLD, 18));

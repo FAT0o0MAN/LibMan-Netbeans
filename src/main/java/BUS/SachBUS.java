@@ -10,17 +10,17 @@ public class SachBUS {
         sachList = new ArrayList<>();
     }
 
-    // 🧩 Add new book
+    // Add new book
     public void addSach(SachDTO sach) {
         sachList.add(sach);
     }
 
-    // 🗑️ Remove book by ID
+    //️ Remove book by ID
     public boolean removeSach(String maSach) {
         return sachList.removeIf(s -> s.getMaSach().equalsIgnoreCase(maSach));
     }
 
-    // 🔍 Find a book by ID
+    // Find a book by ID
     public SachDTO findSachById(String maSach) {
         for (SachDTO s : sachList) {
             if (s.getMaSach().equalsIgnoreCase(maSach)) {
@@ -30,7 +30,7 @@ public class SachBUS {
         return null;
     }
 
-    // 🔍 Search by name (optional utility)
+    // Search by name (optional utility)
     public ArrayList<SachDTO> searchByName(String keyword) {
         ArrayList<SachDTO> result = new ArrayList<>();
         for (SachDTO s : sachList) {
@@ -41,7 +41,7 @@ public class SachBUS {
         return result;
     }
 
-    // ✏️ Update info
+    // Update info
     public boolean updateSach(SachDTO updatedSach) {
         for (int i = 0; i < sachList.size(); i++) {
             SachDTO current = sachList.get(i);
@@ -53,12 +53,12 @@ public class SachBUS {
         return false;
     }
 
-    // 📋 Return all books
+    // Return all books
     public ArrayList<SachDTO> getAll() {
         return sachList;
     }
 
-    // 🔄 For JTable convenience
+    /*
     public Object[][] toTableData() {
         Object[][] data = new Object[sachList.size()][];
         for (int i = 0; i < sachList.size(); i++) {
@@ -66,4 +66,5 @@ public class SachBUS {
         }
         return data;
     }
+    */
 }

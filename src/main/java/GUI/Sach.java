@@ -69,11 +69,7 @@ public class Sach extends JPanel {
 
 
         String[] columnNames = { "ID", "Tên sách", "Mã tác giả", "Mã nhà sản xuất", "Loại sách", "Số lượng", "Năm xuất bản", "Mã kệ sách", "Ảnh"};
-        Object[][] data = {
-            { 1, "Doraemon", "Fujiko F. Fujio", "1", "1", "1", "1", "1", "1" },
-            { 2, "Conan", "Aoyama Gosho", "1", "1", "1", "1", "1", "1" },
-            { 3, "Naruto", "Masashi Kishimoto", "1", "1", "1", "1", "1", "1" }
-        };
+        Object[][] data = {};
         model = new DefaultTableModel(data, columnNames);
         SachJTable = new JTable(model);
         tableScrollPane = new JScrollPane(SachJTable);

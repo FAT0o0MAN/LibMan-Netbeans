@@ -1,13 +1,17 @@
 package GUI;
 
+import BUS.TacGiaBUS;
+import DTO.TacGiaDTO;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 
 public class TacGia extends JPanel {
     JPanel TacGiaForm = new JPanel();
     JScrollPane tableScrollPane;
     JTable TacGiaJTable;
+    DefaultTableModel model;
     JPanel searchBar = new JPanel();
 
     JTextField tenField = new JTextField();
@@ -25,24 +29,45 @@ public class TacGia extends JPanel {
     JLabel quequanLabel = new JLabel("Quê quán:");
     JLabel namsinhLabel = new JLabel("Năm sinh:");
     JLabel searchLabel = new JLabel("Tìm kiếm:");
+    
+    TacGiaBUS tacgiaBUS = new TacGiaBUS();
 
 
     public TacGia() {
+        initComponents();
         initGUI();
+    }
+    
+    
+    private void initComponents() {
+        
+        String[] columnNames = { "ID", "Tên tác giả", "Năm sinh", "Quê quán"};
+        Object[][] data = {};
+        model = new DefaultTableModel(data, columnNames);
+        TacGiaJTable = new JTable(model);
+        tableScrollPane = new JScrollPane(TacGiaJTable);
+
+
+        addButton.addActionListener(e -> onAddTacGia());
+        deleteButton.addActionListener(e -> onDeleteTacGia());
+        searchButton.addActionListener(e -> onSearchTacGia());
+        refreshButton.addActionListener(e -> refreshTable());
+
+
+        TacGiaJTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int row = TacGiaJTable.getSelectedRow();
+                if (row >= 0) {
+                    tenField.setText(TacGiaJTable.getValueAt(row, 1).toString());
+                    namsinhField.setText(TacGiaJTable.getValueAt(row, 2).toString());
+                    quequanField.setText(TacGiaJTable.getValueAt(row, 3).toString());
+                }
+            }
+        });
     }
 
     private void initGUI() {
         setStyle();
-
-    
-        String[] columnNames = { "ID", "Tên tác giả", "Năm sinh", "Quê quán"};
-        Object[][] data = {
-            { 1, "Doraemon", "Fujiko F. Fujio", "1" },
-            { 2, "Conan", "Aoyama Gosho", "1", "1" },
-            { 3, "Naruto", "Masashi Kishimoto", "1" }
-        };
-        TacGiaJTable = new JTable(data, columnNames);
-        tableScrollPane = new JScrollPane(TacGiaJTable);
 
 
         GroupLayout formGroupLayout = new GroupLayout(TacGiaForm);
@@ -152,6 +177,59 @@ public class TacGia extends JPanel {
                 .addComponent(searchBar)
                 .addComponent(tableScrollPane)
         );
+    }
+    
+    
+    
+    
+    private void onAddTacGia() {
+        try {
+            TacGiaDTO tg = new TacGiaDTO(
+                "TG" + (model.getRowCount() + 1),
+                tenField.getText(),
+                Integer.parseInt(namsinhField.getText()),
+                quequanField.getText()
+            );
+       
+            tacgiaBUS.addTacGia(tg);
+            model.addRow(tg.toRow());
+            clearFields();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi nhập liệu: " + ex.getMessage());
+        }
+    }
+
+    private void onDeleteTacGia() {
+        int row = TacGiaJTable.getSelectedRow();
+        if (row >= 0) {
+            String maTacGia = (String) model.getValueAt(row, 0);
+            tacgiaBUS.removeTacGia(maTacGia);
+            model.removeRow(row);
+        } else {
+            JOptionPane.showMessageDialog(this, "Chọn tác giả cần xóa!");
+        }
+    }
+
+    private void onSearchTacGia() {
+        String keyword = searchField.getText();
+        model.setRowCount(0);
+        for (TacGiaDTO s : tacgiaBUS.searchByName(keyword)) {
+            model.addRow(s.toRow());
+        }
+    }
+
+    private void refreshTable() {
+        model.setRowCount(0);
+        for (TacGiaDTO s : tacgiaBUS.getAll()) {
+            model.addRow(s.toRow());
+        }
+    }
+
+    private void clearFields() {
+        tenField.setText("");
+        namsinhField.setText("");
+        quequanField.setText("");
+        searchField.setText("");
     }
 
 
