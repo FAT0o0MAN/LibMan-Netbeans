@@ -21,8 +21,8 @@ public class fk extends JFrame{
     TacGia panel4 = new TacGia();
     NhaXuatBan panel5 = new NhaXuatBan();
     NhanVien panel6 = new NhanVien();
-    JPanel panel7 = new JPanel();
-    JPanel panel8 = new JPanel();
+    PhieuMuon panel7 = new PhieuMuon();
+    PhieuNhap panel8 = new PhieuNhap();
     
 
     public fk() {

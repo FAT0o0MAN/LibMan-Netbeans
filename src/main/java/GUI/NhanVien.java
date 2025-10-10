@@ -49,8 +49,8 @@ public class NhanVien extends JPanel {
     
     public void initComponents() {
 
-        gioitinhCB.addItem("Male");
-        gioitinhCB.addItem("Female");
+        gioitinhCB.addItem("Nam");
+        gioitinhCB.addItem("Nữ");
 
 
         String[] columnNames = { "ID", "Tên nhân viên", "Giới tính", "Năm sinh", "Số điện thoại", "Ngày bắt đầu", "Lương", "Địa chỉ"};

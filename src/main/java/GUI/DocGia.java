@@ -43,8 +43,8 @@ public class DocGia extends JPanel {
     
     private void initComponents() {
         
-        gioitinhCB.addItem("Male");
-        gioitinhCB.addItem("Female");
+        gioitinhCB.addItem("Nam");
+        gioitinhCB.addItem("Nữ");
         
         
         String[] columnNames = { "ID", "Tên độc giả", "Địa chỉ", "Số điện thoại", "Giới tính"};
